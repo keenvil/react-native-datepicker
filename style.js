@@ -72,6 +72,9 @@ let style = StyleSheet.create({
   },
   disabled: {
     backgroundColor: '#eee',
+  },
+  darkModePicker: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)' 
   }
 });
 

@@ -4,15 +4,16 @@ import {
   View,
   Text,
   Image,
-  Modal,
   TouchableHighlight,
   Platform,
   Animated,
-  Keyboard,
+  Keyboard
 } from 'react-native';
+import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import Style from './style';
 import Moment from 'moment';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import Modal from 'react-native-modal';
 
 const FORMATS = {
   'date': 'YYYY-MM-DD',
@@ -366,131 +367,140 @@ class DatePicker extends Component {
       disabled && customStyles.disabled,
     ];
 
+    const colorScheme = useColorScheme();
+
+    const pickerStyles = [Style.datePicker, customStyles.datePicker];
+    if (colorScheme === 'dark') {
+      pickerStyles.push(styles.darkModePicker);
+    }
+
     return (
-      <TouchableComponent
-        style={[Style.dateTouch, style]}
-        underlayColor={'transparent'}
-        onPress={this.onPressDate}
-        testID={testID}
-      >
-        <View style={[Style.dateTouchBody, customStyles.dateTouchBody]}>
-          {
-            !this.props.hideText ?
-              <View style={dateInputStyle}>
-                {this.getTitleElement()}
-              </View>
-              :
-              <View/>
-          }
-          {this._renderIcon()}
-          {Platform.OS === 'ios' && <Modal
-            transparent
-            animationType="none"
-            visible={this.state.modalVisible}
-            supportedOrientations={SUPPORTED_ORIENTATIONS}
-            onRequestClose={() => { this.setModalVisible(false); }}
-          >
-            <View
-              style={{flex: 1}}
+      <AppearanceProvider>
+        <TouchableComponent
+          style={[Style.dateTouch, style]}
+          underlayColor={'transparent'}
+          onPress={this.onPressDate}
+          testID={testID}
+        >
+          <View style={[Style.dateTouchBody, customStyles.dateTouchBody]}>
+            {
+              !this.props.hideText ?
+                <View style={dateInputStyle}>
+                  {this.getTitleElement()}
+                </View>
+                :
+                <View/>
+            }
+            {this._renderIcon()}
+            {Platform.OS === 'ios' && <Modal
+              transparent
+              animationType="none"
+              visible={this.state.modalVisible}
+              supportedOrientations={SUPPORTED_ORIENTATIONS}
+              onRequestClose={() => { this.setModalVisible(false); }}
             >
-              <TouchableComponent
-                style={Style.datePickerMask}
-                activeOpacity={1}
-                underlayColor={'#00000077'}
-                onPress={this.onPressMask}
+              <View
+                style={{flex: 1}}
               >
                 <TouchableComponent
-                  underlayColor={'#fff'}
-                  style={{flex: 1}}
+                  style={Style.datePickerMask}
+                  activeOpacity={1}
+                  underlayColor={'#00000077'}
+                  onPress={this.onPressMask}
                 >
-                  <Animated.View
-                    style={[Style.datePickerCon, position, { height }, customStyles.datePickerCon]}
+                  <TouchableComponent
+                    underlayColor={'#fff'}
+                    style={{flex: 1}}
                   >
-                    <View pointerEvents={this.state.allowPointerEvents ? 'auto' : 'none'}>
-                      <RNDateTimePicker
-                        value={Moment(this.state.date).toDate()}
-                        mode={mode}
-                        minimumDate={minDate && this.getDate(minDate)}
-                        maximumDate={maxDate && this.getDate(maxDate)}
-                        onChange={this.onDateChange}
-                        minuteInterval={minuteInterval}
-                        timeZoneOffsetInMinutes={timeZoneOffsetInMinutes ? timeZoneOffsetInMinutes : null}
-                        style={[Style.datePicker, customStyles.datePicker]}
-                        locale={locale}
-                      />
-                    </View>
-                    <TouchableComponent
-                      underlayColor={'transparent'}
-                      onPress={this.onPressCancel}
-                      style={[Style.btnText, Style.btnCancel, customStyles.btnCancel]}
-                      testID={cancelBtnTestID}
+                    <Animated.View
+                      style={[Style.datePickerCon, position, { height }, customStyles.datePickerCon]}
                     >
-                      <Text
-                        allowFontScaling={allowFontScaling}
-                        style={[Style.btnTextText, Style.btnTextCancel, customStyles.btnTextCancel]}
+                      <View pointerEvents={this.state.allowPointerEvents ? 'auto' : 'none'}>
+                        <RNDateTimePicker
+                          value={Moment(this.state.date).toDate()}
+                          mode={mode}
+                          minimumDate={minDate && this.getDate(minDate)}
+                          maximumDate={maxDate && this.getDate(maxDate)}
+                          onChange={this.onDateChange}
+                          minuteInterval={minuteInterval}
+                          timeZoneOffsetInMinutes={timeZoneOffsetInMinutes ? timeZoneOffsetInMinutes : null}
+                          style={pickerStyles}
+                          locale={locale}
+                        />
+                      </View>
+                      <TouchableComponent
+                        underlayColor={'transparent'}
+                        onPress={this.onPressCancel}
+                        style={[Style.btnText, Style.btnCancel, customStyles.btnCancel]}
+                        testID={cancelBtnTestID}
                       >
-                        {cancelBtnText}
-                      </Text>
-                    </TouchableComponent>
-                    <TouchableComponent
-                      underlayColor={'transparent'}
-                      onPress={this.onPressConfirm}
-                      style={[Style.btnText, Style.btnConfirm, customStyles.btnConfirm]}
-                      testID={confirmBtnTestID}
-                    >
-                      <Text allowFontScaling={allowFontScaling}
-                            style={[Style.btnTextText, customStyles.btnTextConfirm]}
+                        <Text
+                          allowFontScaling={allowFontScaling}
+                          style={[Style.btnTextText, Style.btnTextCancel, customStyles.btnTextCancel]}
+                        >
+                          {cancelBtnText}
+                        </Text>
+                      </TouchableComponent>
+                      <TouchableComponent
+                        underlayColor={'transparent'}
+                        onPress={this.onPressConfirm}
+                        style={[Style.btnText, Style.btnConfirm, customStyles.btnConfirm]}
+                        testID={confirmBtnTestID}
                       >
-                        {confirmBtnText}
-                      </Text>
-                    </TouchableComponent>
-                  </Animated.View>
+                        <Text allowFontScaling={allowFontScaling}
+                              style={[Style.btnTextText, customStyles.btnTextConfirm]}
+                        >
+                          {confirmBtnText}
+                        </Text>
+                      </TouchableComponent>
+                    </Animated.View>
+                  </TouchableComponent>
                 </TouchableComponent>
-              </TouchableComponent>
-            </View>
-          </Modal>}
-          {(androidDatePickerVisible && Platform.OS === 'android' && mode === 'date') && <RNDateTimePicker
-            mode="date"
-            display={androidMode}
-            is24Hour={is24Hour}
-            minimumDate={minDate && this.getDate(minDate)}
-            maximumDate={maxDate && this.getDate(maxDate)}
-            value={Moment(this.state.date).toDate()}
-            onChange={this.onDatePicked}
-          />
-          }
+              </View>
+            </Modal>}
+            {(androidDatePickerVisible && Platform.OS === 'android' && mode === 'date') && <RNDateTimePicker
+              mode="date"
+              display={androidMode}
+              is24Hour={is24Hour}
+              minimumDate={minDate && this.getDate(minDate)}
+              maximumDate={maxDate && this.getDate(maxDate)}
+              value={Moment(this.state.date).toDate()}
+              onChange={this.onDatePicked}
+            />
+            }
 
-          {(androidTimePickerVisible && Platform.OS === 'android' && mode === 'time') &&
-          <RNDateTimePicker
-            mode="time"
-            display={androidMode}
-            is24Hour={is24Hour}
-            value={Moment(this.state.date).toDate()}
-            onChange={this.onTimePicked}
-          />
-          }
+            {(androidTimePickerVisible && Platform.OS === 'android' && mode === 'time') &&
+            <RNDateTimePicker
+              mode="time"
+              display={androidMode}
+              is24Hour={is24Hour}
+              value={Moment(this.state.date).toDate()}
+              onChange={this.onTimePicked}
+            />
+            }
 
-          {(androidDatePickerVisible && Platform.OS === 'android' && mode === 'datetime') &&
-          <RNDateTimePicker
-            mode="date"
-            display={androidMode}
-            minimumDate={minDate && this.getDate(minDate)}
-            maximumDate={maxDate && this.getDate(maxDate)}
-            value={Moment(this.state.date).toDate()}
-            onChange={this.onDatetimePicked}
-          />
-          }
-          {(androidTimePickerVisible &&  Platform.OS === 'android' && mode === 'datetime') &&
-          <RNDateTimePicker
-            mode="time"
-            display={androidMode}
-            is24Hour={is24Hour}
-            value={Moment(this.state.date).toDate()}
-            onChange={this.onDatetimeTimePicked}
-          />
-          }
-        </View>
-      </TouchableComponent>
+            {(androidDatePickerVisible && Platform.OS === 'android' && mode === 'datetime') &&
+            <RNDateTimePicker
+              mode="date"
+              display={androidMode}
+              minimumDate={minDate && this.getDate(minDate)}
+              maximumDate={maxDate && this.getDate(maxDate)}
+              value={Moment(this.state.date).toDate()}
+              onChange={this.onDatetimePicked}
+            />
+            }
+            {(androidTimePickerVisible &&  Platform.OS === 'android' && mode === 'datetime') &&
+            <RNDateTimePicker
+              mode="time"
+              display={androidMode}
+              is24Hour={is24Hour}
+              value={Moment(this.state.date).toDate()}
+              onChange={this.onDatetimeTimePicked}
+            />
+            }
+          </View>
+        </TouchableComponent>
+      </AppearanceProvider>
     );
   }
 }
