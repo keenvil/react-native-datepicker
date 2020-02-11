@@ -9,7 +9,7 @@ import {
   Animated,
   Keyboard
 } from 'react-native';
-import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
+import { AppearanceProvider, Appearance } from 'react-native-appearance';
 import Style from './style';
 import Moment from 'moment';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
@@ -367,7 +367,7 @@ class DatePicker extends Component {
       disabled && customStyles.disabled,
     ];
 
-    const colorScheme = useColorScheme();
+    const colorScheme = Appearance.getColorScheme();
 
     const pickerStyles = [Style.datePicker, customStyles.datePicker];
     if (colorScheme === 'dark') {
